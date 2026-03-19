@@ -1,4 +1,4 @@
-# 4. labor
+<!-- # 4. labor
 
 I. Definiáljuk azt a Haskell-listát, amely tartalmazza:
 
@@ -23,4 +23,4 @@ III. Könyvtárfüggvények használata nélkül írjuk meg azt a Haskell függv
 - meghatározzuk azt a listát, amely tartalmazza az eredeti lista minden n-ik elemét,
 - tükrözi egy lista elemeit,
 - két módszerrel is meghatározza egy lista legnagyobb elemeinek pozícióit: a lista elemeit kétszer járja be, illetve úgy hogy a lista elemeit csak egyszer járja be,
-- meghatározza egy lista leggyakrabban előforduló elemét.
+- meghatározza egy lista leggyakrabban előforduló elemét. -->
