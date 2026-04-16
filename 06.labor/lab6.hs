@@ -1,75 +1,78 @@
-import GHC.Base (VecElem(Int16ElemRep))
-import System.Win32 (lOCALE_S2359)
-import Data.ByteString (intercalate)
-import Data.List
 
--- I. Írjunk egy-egy Haskell függvényt, amely beolvass a billentyűzetről két természetes számot és kiírja a képernyőre
+import Data.List (unwords)
 
+-- I. feladat
 
+main1 :: IO ()
 main1 = do
-    putStr "x1="
+    putStr "x1 = "
     x1 <- readLn :: IO Int
-    putStr "x2="
+    putStr "x2 = "
     x2 <- readLn :: IO Int 
-    putStr("x1=" ++ show x1 ++ "x2=" ++ show x2)
-    let ls = if x1 < x2 then [x1 .. x2 ] else [x2 .. x1]
+
+    putStrLn ("x1 = " ++ show x1 ++ ", x2 = " ++ show x2)
+
+    let ls = if x1 < x2 then [x1 .. x2] else [x2 .. x1]
         voLs = legtobbVO ls
+
     putStrLn ("Lista elemeinek osszege: " ++ show (sum ls))
     putStrLn ("Primszamok osszege: " ++ show (primszamOsszeg ls))
-    putStrLn ("Legtobb valodi oszto szam: " ++ show (snd. head $ voLs) ++ ", ezzel rendelkezo szam")
-    print (map fst voLs)
 
-main1_2 = do
-    putStr "x1="
-    x1 <- getLine
-    putStr "x2="
-    x2 <- getLine
-    let x1szam = read x1 :: Int
-        x2szam = read x2 :: Int
-    putStr("x1=" ++ show x1 ++ "x2=" ++ show x2)
-    putStr("x1=" ++ show x1szam ++ "x2=" ++ show x2szam)
+    case voLs of
+        [] -> putStrLn "Nincs olyan szam"
+        (x:_) -> do
+            putStrLn ("Legtobb valodi oszto: " ++ show (snd x))
+            putStrLn "Ezzel rendelkezo szamok:"
+            print (map fst voLs)
 
+-- osztók
+osztok :: Int -> [Int]
+osztok x = [i | i <- [1 .. x], mod x i == 0]
+
+-- prímszám ellenőrzés
+primszam :: Int -> Bool
+primszam x = x > 1 && osztok x == [1, x]
+
+-- prímszámok összege
+primszamOsszeg :: [Int] -> Int
+primszamOsszeg = sum . filter primszam
+
+-- valódi osztók
+valodiOsztok :: Int -> [Int]
+valodiOsztok x = [i | i <- [2 .. x `div` 2], mod x i == 0]
+
+-- legtöbb valódi osztó
+legtobbVO :: [Int] -> [(Int, Int)]
+legtobbVO ls = filter (\(_, vo) -> vo == maxVO) ls2
+  where
+    ls2 = [(szam, length (valodiOsztok szam)) | szam <- ls]
+    maxVO = maximum (map snd ls2)
+
+--------------------------------------------------
+
+-- II. feladat
+
+main2 :: IO ()
+main2 = do
+    putStr "n = "
+    n <- readLn :: IO Int
+
+    let fiboLs = fibo n
+
+    putStrLn "Fibonacci szamok (>=50 es < n):"
+    putStrLn $ unwords (map show fiboLs)
+
+-- Fibonacci lista
+fibo :: Int -> [Int]
+fibo n = takeWhile (< n) $ dropWhile (< 50) fiboLista
+
+-- végtelen Fibonacci sorozat
+fiboLista :: [Int]
+fiboLista = 0 : 1 : zipWith (+) fiboLista (tail fiboLista)
 -- getLine -> stringet olvas es ad at, atalakitas read x :: Int
 -- readLn -> adott tipuskent ad at, atalakitas readLn :: IO Int
 
--- - a két szám közötti prímszámok összegét,
-osztok x = [i | i <- [1 .. x], mod x i == 0]
 
-primszam x = [1 .. x] == osztok x
-
-primszamOsszeg ls = sum . filter primszam $ ls
-
--- - a két szám közötti számok összegét,
--- - a két szám közötti azon számokat, amelyeknek legtöbb valódi osztója van.
-valodiOsztok x = [i | i <- [2 .. div x 2], mod x i == 0, i /= x]
-
-legtobbVO ls = filter (\(szam, vo) -> vo == maxVO) ls2 
-    where
-        ls2 = [(szam, length $ valodiOsztok szam) | szam <- ls]
-        maxVO = maximum $ map snd ls2
-
-
--- II. Írjunk egy-egy Haskell függvényt, amely beolvassa a billentyűzetről az n természetes számot és kiírja a képernyőre
-main2 = do
-    putStr "n=" 
-    n <- readLn :: IO Int
-    putStrLn ("n=" ++ show n)
-    let fiboLs = fibo n
-    putStrLn "mapM_-el"
-    mapM_ (\x -> putStr (show x ++ " ")) fiboLs
-    putStrLn "\nintercalatel"
-    putStrLn $ intercalate " " $ map show fiboLs
-
-
-
--- - n-ig a Fibonacci számok listáját ($n > 50$), úgy hogy a számok közé szóközt ír,
-fibo n = dropWhile (<50) $ takeWhile (< n) $ fiboSg 0 1 0
-    where 
-        fiboSg a b res = res : fiboSg b res (res + b)
-
-fibo2 n a b res
-    | res < n = res : fibo2 n b res ( res + b)
-    | otherwise = [res]
 
 
 -- - n-ig a prímszámok listáját, úgy hogy a számok közé szóközt ír,
